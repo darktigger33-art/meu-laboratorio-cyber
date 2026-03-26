@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber-Lab v1.0</title>
+    <style>
+        :root { --green: #00ff41; --dark: #050505; --gray: #1a1a1a; }
+        body { background-color: var(--dark); color: var(--green); font-family: 'Courier New', monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Cabeçalho Estiloso */
+        header { border-bottom: 2px solid var(--green); padding: 10px 20px; display: flex; justify-content: space-between; background: var(--gray); }
+        .status-bar { font-size: 0.8em; }
+
+        /* Menu de Abas */
+        nav { background: #111; padding: 10px; display: flex; gap: 10px; }
+        .tab-btn { background: none; border: 1px solid var(--green); color: var(--green); padding: 5px 15px; cursor: pointer; }
+        .tab-btn:hover, .tab-btn.active { background: var(--green); color: black; }
+
+        /* Conteúdo Principal */
+        main { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .card { border: 1px solid var(--green); padding: 20px; background: var(--gray); width: 80%; max-width: 600px; display: none; }
+        .card.active { display: block; }
+
+        input { background: #000; border: 1px solid var(--green); color: var(--green); padding: 10px; width: 80%; margin: 10px 0; }
+        button.action-btn { background: var(--green); color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; width: 100%; }
+        
+        #output { margin-top: 20px; color: #fff; word-break: break-all; border-left: 3px solid var(--green); padding-left: 10px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>[ SYSTEM: OPERATIONAL ]</div>
+    <div class="status-bar">USER: ADM_13Y | IP: 127.0.0.1</div>
+</header>
+
+<nav>
+    <button class="tab-btn active" onclick="openTab('cripto')">1. CRIPTOGRAFIA</button>
+    <button class="tab-btn" onclick="openTab('hash')">2. SEGURANÇA (HASH)</button>
+    <button class="tab-btn" onclick="openTab('bypass')">3. TESTE DE BYPASS</button>
+</nav>
+
+<main>
+    <!-- ABA 1: CRIPTOGRAFIA -->
+    <div id="cripto" class="card active">
+        <h3>🔐 Codificador Base64</h3>
+        <p>Transforme texto em código e vice-versa.</p>
+        <input type="text" id="inputCripto" placeholder="Digite uma mensagem...">
+        <button class="action-btn" onclick="encodeBase64()">CODIFICAR</button>
+        <button class="action-btn" style="margin-top:5px; background: #555; color: white;" onclick="decodeBase64()">DECODIFICAR</button>
+    </div>
+
+    <!-- ABA 2: HASH -->
+    <div id="hash" class="card">
+        <h3>🛡️ Gerador de Hash SHA-256</h3>
+        <p>Crie uma "digital" impossível de reverter.</p>
+        <input type="text" id="inputHash" placeholder="Digite a senha para gerar o Hash...">
+        <button class="action-btn" onclick="generateSHA()">GERAR HASH ÚNICO</button>
+    </div>
+
+    <!-- ABA 3: BYPASS -->
+    <div id="bypass" class="card">
+        <h3>🚪 O Cofre Vulnerável</h3>
+        <p>A senha é 'admin', mas tente entrar usando o Console (F12).</p>
+        <input type="password" id="inputPass" placeholder="Senha...">
+        <button class="action-btn" id="btnCheck" onclick="checkVault()">TENTAR ACESSO</button>
+    </div>
+
+    <div id="output">> Sistema aguardando entrada...</div>
+</main>
+
+<script>
+    // Função para trocar as abas
+    function openTab(tabName) {
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        event.currentTarget.classList.add('active');
+        document.getElementById('output').innerText = "> Aba alterada para: " + tabName.toUpperCase();
+    }
+
+    // Lógica Cripto
+    function encodeBase64() {
+        let val = document.getElementById('inputCripto').value;
+        document.getElementById('output').innerText = "> RESULTADO: " + btoa(val);
+    }
+    function decodeBase64() {
+        let val = document.getElementById('inputCripto').value;
+        try { document.getElementById('output').innerText = "> RESULTADO: " + atob(val); }
+        catch { document.getElementById('output').innerText = "> ERRO: Formato inválido!"; }
+    }
+
+    // Lógica Hash
+    async function generateSHA() {
+        let val = document.getElementById('inputHash').value;
+        const msgBuffer = new TextEncoder().encode(val);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        document.getElementById('output').innerText = "> HASH GERADO: " + hashHex;
+    }
+
+    // Lógica Bypass
+    function checkVault() {
+        let pass = document.getElementById('inputPass').value;
+        if(pass === "admin") {
+            alert("Acesso Permitido!");
+        } else {
+            alert("Acesso Negado!");
+        }
+    }
+</script>
+
+</body>
+</html>
